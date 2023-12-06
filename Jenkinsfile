@@ -1,44 +1,29 @@
 pipeline {
-	agent none
-
-	triggers {
-		pollSCM 'H/10 * * * *'
-	}
-
-	options {
-		disableConcurrentBuilds()
-		buildDiscarder(logRotator(numToKeepStr: '14'))
-	}
+	agent any
 
 	stages {
-		stage("test: baseline (jdk17)") {
-			agent {
-				docker {
-					image 'adoptopenjdk/openjdk17:latest'
-					args '-v $HOME/.m2:/tmp/jenkins-home/.m2'
-				}
-			}
-			options { timeout(time: 30, unit: 'MINUTES') }
-			steps {
-				sh 'test/run.sh'
-			}
-		}
+
+		stage("build") {
+        steps {
+                echo "Build"
+        }
+        }
+
+        stage("test") {
+        steps {
+                echo "Test"
+        }
+        }
+
+        stage("deploy"){
+         when {
+            branch "main"
+         }
+         steps {
+                echo "Deploy"
+         }
+        }
 
 	}
 
-	post {
-		changed {
-			script {
-				slackSend(
-						color: (currentBuild.currentResult == 'SUCCESS') ? 'good' : 'danger',
-						channel: '#sagan-content',
-						message: "${currentBuild.fullDisplayName} - `${currentBuild.currentResult}`\n${env.BUILD_URL}")
-				emailext(
-						subject: "[${currentBuild.fullDisplayName}] ${currentBuild.currentResult}",
-						mimeType: 'text/html',
-						recipientProviders: [[$class: 'CulpritsRecipientProvider'], [$class: 'RequesterRecipientProvider']],
-						body: "<a href=\"${env.BUILD_URL}\">${currentBuild.fullDisplayName} is reported as ${currentBuild.currentResult}</a>")
-			}
-		}
-	}
 }
