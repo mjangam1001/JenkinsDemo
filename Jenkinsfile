@@ -1,17 +1,24 @@
 pipeline {
 	agent any
-
+	 environment {
+        // Define environment variables
+        MAVEN_HOME = tool 'Maven' // Assumes Maven is configured in Jenkins tools
+        // TOMCAT_URL = 'http://tomcat-user:tomcat-password@tomcat-server:8080'
+        // TOMCAT_MANAGER_URL = "${TOMCAT_URL}/manager/text"
+        // WAR_FILE = 'your-app.war' // Update with your actual WAR file name
+    }
+	
 	stages {
 
 		stage("build") {
         steps {
-                mvn clean compile
+                bat "\"${MAVEN_HOME}\\bin\\mvn\" clean compile package"
         }
         }
 
         stage("test") {
         steps {
-                mvn test
+                bat "\"${MAVEN_HOME}\\bin\\mvn\" test"
         }
         }
 
