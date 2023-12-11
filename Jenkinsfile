@@ -5,13 +5,13 @@ pipeline {
 
 		stage("build") {
         steps {
-                echo "Build"
+                mvn clean compile
         }
         }
 
         stage("test") {
         steps {
-                echo "Test"
+                mvn test
         }
         }
 
@@ -20,7 +20,7 @@ pipeline {
             branch "main"
          }
          steps {
-                echo "Deploy"
+                echo "deployed"
          }
         }
 
